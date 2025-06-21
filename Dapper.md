@@ -12,14 +12,14 @@ public static IEnumerable<Student> GetAllStudents()
     return students;
 }
 ```
-## Select by id
+## Select by Id
 ```
 public static IEnumerable<Student> GetStudentById(int id)
 {
     List<Student>? students;
     var connection = new SqlConnection(connectionString);
-    var sql = "SELECT Id, Name, Birthdate as BirthdateX FROM Persons.dbo.Student WITH (nolock) WHERE Id = @Id";
-    students = connection.Query<Student>(sql, new {Id = id}).ToList();
+    var sql = "SELECT Id, Name, Birthdate as BirthdateX FROM Persons.dbo.Student WITH (nolock) WHERE StudentId = @Id";
+    students = connection.Query<Student>(sql, new {StudentId = id}).ToList();
     return students;
 }
 ```
