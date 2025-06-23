@@ -24,6 +24,20 @@ public static IEnumerable<Student> GetStudentById(int id)
 }
 ```
 
+## QueryMultipleAsync
+```
+var connection = new SqlConnection(connectionString);
+string sql = @"
+SELECT * FROM Persons.dbo.Student WHERE ID = @StudentId;
+SELECT * FROM Persons.dbo.StudentClass WHERE StudentId = @StudentId;
+";
+using (var multi = await connection.QueryMultipleAsync(sql, new {orderID = 1}))
+{
+   var student = multi.ReadFirst<Student>();
+   var StudentClasses = multi.Read<StudentClass>().ToList();
+}
+```
+
 ## Fix Datetime to Dateonly using DateOnlyHandler
 ```
 public class DateOnlyHandler : SqlMapper.TypeHandler<DateOnly>
@@ -36,7 +50,17 @@ public class DateOnlyHandler : SqlMapper.TypeHandler<DateOnly>
 }
 ```
 
-## Register Dapper type handler
+### Register Dapper type handler
 ```
 SqlMapper.AddTypeHandler(new DateOnlyHandler());
 ```
+
+## Stored Pricedures
+using (var connection = new SqlConnection("connectionString"))
+{
+    connection.Open();
+    using (var results = connection.QueryMultiple("MyStoredProcedure", commandType: CommandType.StoredProcedure))
+    {	
+        var resultSet2 = results.Read<Student>().ToList();
+    }
+}
