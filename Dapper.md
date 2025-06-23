@@ -56,6 +56,7 @@ SqlMapper.AddTypeHandler(new DateOnlyHandler());
 ```
 
 ## Stored Pricedures
+```
 using (var connection = new SqlConnection("connectionString"))
 {
     connection.Open();
@@ -64,3 +65,23 @@ using (var connection = new SqlConnection("connectionString"))
         var resultSet2 = results.Read<Student>().ToList();
     }
 }
+```
+### Parameters
+```
+using(var connection = new SqlConnection(connectionString))
+{
+    //Set up DynamicParameters object to pass parameters  
+    DynamicParameters parameters = new DynamicParameters();   
+    parameters.Add("Id", 1);  
+	
+    //Execute stored procedure and map the returned result to a Customer object  
+    var student = conn.QuerySingleOrDefault<Student>("GetStudentById", parameters, commandType: CommandType.StoredProcedure);
+}
+
+// or with values for EXEC GetStudentsByYear @BeginningDate, @EndingDate
+
+var storedProcedureName = "GetStudentsByYear";
+var values = new { BeginningDate = "2017-01-01", EndingDate = "2019-12-31" };
+var results = connection.Query(storedProcedureName, values, commandType: CommandType.StoredProcedure).ToList();
+results.ForEach(r => Console.WriteLine($"{r.Id} {r.Name}"));
+```
