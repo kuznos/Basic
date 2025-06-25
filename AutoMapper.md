@@ -22,7 +22,7 @@ public class EmployeeDTO {
 using AutoMapper;
 public class MappingProfile : Profile {
     public MappingProfile() {
-        CreateMap<Employee, EmployeeDTO>();
+        CreateMap<Employee, EmployeeDTO>().ReverseMap();
     }
 }
 ```
@@ -105,4 +105,5 @@ namespace AutoMapperDemo
         }
     }
 }
+
 ```
