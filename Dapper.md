@@ -136,7 +136,7 @@ using(var connection = new SqlConnection(connectionString))
 ```
 
 ----------------------------------------------------------------------
-# Dapper with the Repository Pattern
+# DAPPER WITH THE REPOSITORY PATTERN
 ----------------------------------------------------------------------
 
 ### Entity
@@ -230,7 +230,7 @@ public class StudentsController : ControllerBase
 }
 ```
 
-## Full example 
+## FULL EXAMPLE 
 [Clean architecture example with Dapper](https://github.com/sandeepkumar17/CleanArch)
 
 
