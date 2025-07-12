@@ -1,0 +1,37 @@
+Syntax	Direction	Purpose
+(event)	Inbound	Receiving data via an event (e.g., click, custom emit)
+[property]	Outbound	Sending data to a component via input binding
+
+
+The square brackets [] indicate property binding.
+[productid] is the name of the input property defined in the child component using the @Input() decorator.
+
+using parentheses () in the template indicates event binding, which means you're handling data coming from the browser or child component into your logic
+(click) is the syntax for event binding—it listens for a click event on an element and triggers a method in your component when that event occurs.
+
+<button (click)="doSomething()">Click Me</button>
+
+
+1. DOM Event (Click):
+html
+<button (click)="doSomething()">Click Me</button>
+➡️ User clicks → doSomething() runs → data flows into your component logic
+
+2. Custom Event from Child Component:
+Child (child.component.ts):
+ts
+@Output() clicked = new EventEmitter<string>();
+
+Child Template:
+html
+<button (click)="clicked.emit('Hello')">Say Hi</button>
+
+Parent Template:
+html
+<app-child (clicked)="handleMessage($event)"></app-child>
+
+Parent Component:
+ts
+handleMessage(message: string) {
+  console.log(message); // Output: "Hello"
+}
