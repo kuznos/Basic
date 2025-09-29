@@ -1,0 +1,140 @@
+===================
+#**Quartz**
+===================
+
+
+using Quartz;
+using System;
+using System.Threading.Tasks;
+
+public class MyScheduledJob : IJob
+{
+    public Task Execute(IJobExecutionContext context)
+    {
+        Console.WriteLine($"Job executed at {DateTime.Now}");
+        // Your actual logic here
+        return Task.CompletedTask;
+    }
+}
+
+
+//Program.cs
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Quartz;
+
+Host.CreateDefaultBuilder(args)
+    .UseWindowsService()
+    .ConfigureServices((hostContext, services) =>
+    {
+        services.AddQuartz(q =>
+        {
+            q.UseMicrosoftDependencyInjectionJobFactory();
+
+            // Define the job
+            var jobKey = new JobKey("MyScheduledJob");
+            q.AddJob<MyScheduledJob>(opts => opts.WithIdentity(jobKey));
+
+            // Trigger at 15:00 Monday–Friday
+            q.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity("Trigger15")
+                .WithCronSchedule("0 0 15 ? * MON-FRI")); //Cron Expressions https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html#cron-expressions
+
+            // Trigger at 21:00 Monday–Friday
+            q.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity("Trigger21")
+                .WithCronSchedule("0 0 21 ? * MON-FRI")); //Cron Expressions https://www.quartz-scheduler.net/documentation/quartz-3.x/tutorial/crontriggers.html#cron-expressions
+        });
+
+        services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+    })
+    .Build()
+    .Run();
+
+
+====================================================================
+#**DEPLOY Unistall and Install POWERSHELL (filename Deploy-Service.ps1)**
+====================================================================
+
+# -------------------------------
+# Configuration
+# -------------------------------
+$projectPath = "C:\Path\To\Your\ConsoleApp"         # Path to your .NET project
+$publishPath = "$projectPath\bin\Release\net8.0\win-x64\publish"
+$serviceName = "MyService"
+$displayName = "My Scheduled Job Service"
+$exeName = "MyService.exe"
+$installPath = "C:\Services\$serviceName"
+$runtime = "win-x64"
+
+# -------------------------------
+# Step 1: Publish the .NET App
+# -------------------------------
+Write-Host "Publishing .NET app..." -ForegroundColor Cyan
+dotnet publish $projectPath -c Release -r $runtime --self-contained -o $publishPath
+
+# -------------------------------
+# Step 2: Stop and Delete Existing Service
+# -------------------------------
+$service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+if ($service) {
+    Write-Host "Stopping existing service..." -ForegroundColor Yellow
+    Stop-Service -Name $serviceName -Force
+    Start-Sleep -Seconds 3
+
+    Write-Host "Deleting existing service..." -ForegroundColor Yellow
+    sc.exe delete $serviceName | Out-Null
+    Start-Sleep -Seconds 3
+} else {
+    Write-Host "No existing service found. Proceeding..." -ForegroundColor Green
+}
+
+# -------------------------------
+# Step 3: Copy Files to Install Path
+# -------------------------------
+Write-Host "Preparing install directory..." -ForegroundColor Cyan
+if (Test-Path $installPath) {
+    Remove-Item $installPath -Recurse -Force
+}
+New-Item -ItemType Directory -Path $installPath | Out-Null
+Copy-Item "$publishPath\*" $installPath -Recurse
+
+# -------------------------------
+# Step 4: Install the Service
+# -------------------------------
+Write-Host "Installing service..." -ForegroundColor Cyan
+$binPath = "`"$installPath\$exeName`""
+sc.exe create $serviceName binPath= $binPath start= auto DisplayName= "`"$displayName`"" | Out-Null
+
+# -------------------------------
+# Step 5: Start the Service
+# -------------------------------
+Write-Host "Starting service..." -ForegroundColor Cyan
+Start-Service -Name $serviceName
+
+# -------------------------------
+# Final Status
+# -------------------------------
+Start-Sleep -Seconds 2
+$serviceStatus = Get-Service -Name $serviceName
+Write-Host "Service '$serviceName' is now $($serviceStatus.Status)." -ForegroundColor Green
+
+=================================================
+RUN POWERSHELL Using bat file (DeployService.bat)
+=================================================
+
+@echo off
+SET PowerShellScript="C:\Path\To\Deploy-Service.ps1"
+
+REM Run PowerShell script as Administrator
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File %PowerShellScript%' -Verb RunAs"
+
+Notes:
+The -ExecutionPolicy Bypass ensures your script runs even if PowerShell has restrictions.
+The -Verb RunAs prompts for admin privileges.
+
+
+
