@@ -16,6 +16,9 @@ public class MyScheduledJob : IJob
     }
 }
 
+*********************************************
+https://www.youtube.com/watch?v=iD3jrj3RBuc
+*********************************************
 
 //Program.cs
 
