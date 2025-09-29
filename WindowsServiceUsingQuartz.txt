@@ -1,7 +1,6 @@
-===================
-#**Quartz**
-===================
-
+========================================================================
+APP
+========================================================================
 
 using Quartz;
 using System;
@@ -55,9 +54,9 @@ Host.CreateDefaultBuilder(args)
     .Run();
 
 
-====================================================================
-#**DEPLOY Unistall and Install POWERSHELL (filename Deploy-Service.ps1)**
-====================================================================
+========================================================================
+DEPLOY Unistall and Install POWERSHELL (filename Deploy-Service.ps1)
+========================================================================
 
 # -------------------------------
 # Configuration
@@ -122,9 +121,9 @@ Start-Sleep -Seconds 2
 $serviceStatus = Get-Service -Name $serviceName
 Write-Host "Service '$serviceName' is now $($serviceStatus.Status)." -ForegroundColor Green
 
-=================================================
+========================================================================
 RUN POWERSHELL Using bat file (DeployService.bat)
-=================================================
+========================================================================
 
 @echo off
 SET PowerShellScript="C:\Path\To\Deploy-Service.ps1"
@@ -132,7 +131,9 @@ SET PowerShellScript="C:\Path\To\Deploy-Service.ps1"
 REM Run PowerShell script as Administrator
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process PowerShell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File %PowerShellScript%' -Verb RunAs"
 
+---------------------------------
 Notes:
+
 The -ExecutionPolicy Bypass ensures your script runs even if PowerShell has restrictions.
 The -Verb RunAs prompts for admin privileges.
 
