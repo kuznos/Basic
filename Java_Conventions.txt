@@ -1,0 +1,170 @@
+Packages
+----------------------------------------------------------------
+
+com.yourname.projectname.layer
+com.vasilis.eventsorganizer.controller
+com.vasilis.eventsorganizer.service
+com.vasilis.eventsorganizer.repository
+com.vasilis.eventsorganizer.model
+com.vasilis.eventsorganizer.dto
+com.vasilis.eventsorganizer.exception
+com.vasilis.eventsorganizer.config
+
+Classes — PascalCase, noun-based
+----------------------------------------------------------------
+
+// Entities / models
+User
+Event
+EventOrganizer
+
+// Controllers
+UserController
+EventController
+
+// Services (interface + impl pattern)
+----------------------------------------------------------------
+UserService          // interface
+UserServiceImpl      // implementation
+
+// Repositories
+UserRepository
+EventRepository
+
+// DTOs
+UserDto
+CreateEventRequest
+EventResponse
+UserSummaryDto
+
+// Exceptions
+EventNotFoundException
+UserAlreadyExistsException
+
+// Config
+SecurityConfig
+DatabaseConfig
+SwaggerConfig
+
+// Utilities
+DateUtils
+StringUtils
+ValidationUtils
+
+Methods — camelCase, verb-based
+----------------------------------------------------------------
+
+// CRUD
+getUser()
+getUserById()
+getAllUsers()
+createUser()
+updateUser()
+deleteUser()
+
+// Booleans — use is/has/can prefix
+isActive()
+hasPermission()
+canRegister()
+isEventFull()
+
+// Finders
+
+findByEmail()
+findActiveEvents()
+findEventsByOrganizer()
+
+// Converters
+toDto()
+toEntity()
+mapToResponse()
+
+Variables — camelCase, meaningful names
+----------------------------------------------------------------
+
+// Good
+List<Event> upcomingEvents;
+int maxCapacity;
+boolean isRegistered;
+String organizerEmail;
+
+// Bad — avoid
+List<Event> list;
+int x;
+boolean flag;
+String s;
+
+Constants — SCREAMING_SNAKE_CASE
+----------------------------------------------------------------
+
+public static final int MAX_ATTENDEES = 100;
+public static final String DEFAULT_TIMEZONE = "UTC";
+public static final long TOKEN_EXPIRY_MS = 86400000L;
+
+Interfaces — PascalCase, usually a capability or contract
+----------------------------------------------------------------
+
+UserService         // service contract (most common in Spring)
+Printable
+Auditable
+Schedulable
+Avoid the old IUserService Hungarian notation prefix — it's considered outdated in modern Java.
+
+----------------------------------------------------------------
+
+Enums — PascalCase name, SCREAMING_SNAKE_CASE values
+
+public enum EventStatus {
+    DRAFT,
+    PUBLISHED,
+    CANCELLED,
+    COMPLETED
+}
+
+public enum UserRole {
+    ADMIN,
+    ORGANIZER,
+    ATTENDEE
+}
+```
+
+---
+
+**Spring-specific conventions**
+
+| Layer | Suffix | Example |
+|---|---|---|
+| REST controller | `Controller` | `EventController` |
+| Service interface | `Service` | `EventService` |
+| Service class | `ServiceImpl` | `EventServiceImpl` |
+| JPA repository | `Repository` | `EventRepository` |
+| Data transfer object | `Dto` or `Request`/`Response` | `EventDto`, `CreateEventRequest` |
+| Entity | no suffix | `Event`, `User` |
+| Exception | `Exception` | `EventNotFoundException` |
+| Configuration | `Config` | `SecurityConfig` |
+
+---
+
+**Project structure convention**
+```
+src/main/java/com/vasilis/eventsorganizer/
+├── config/
+├── controller/
+├── dto/
+│   ├── request/
+│   └── response/
+├── exception/
+├── model/           ← or entity/
+├── repository/
+├── service/
+│   └── impl/
+└── EventsOrganizerApplication.java
+
+----------------------------------------------------------------
+
+A few extra rules worth knowing:
+
+Acronyms are treated as words — write HttpRequest not HTTPRequest, JsonParser not JSONParser
+One class per file, filename must match the class name exactly
+Test classes mirror the class they test: EventService → EventServiceTest
+Boolean fields in entities avoid is prefix to prevent JPA getter conflicts — use active not isActive, which generates isActive() automatically via Lombok
